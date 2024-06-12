@@ -39,8 +39,6 @@ dependencies {
 
     implementation libs.androidx.fragment.ktx
 
-    implementation 'com.android.databinding:viewbinding:8.4.2'
-
     implementation libs.androidx.core.ktx
     implementation libs.androidx.appcompat
     implementation libs.material
