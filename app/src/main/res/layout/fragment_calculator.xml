@@ -75,7 +75,6 @@
         </TableRow>
 
         <TableRow>
-
             <Button
                 android:id="@+id/seven_button"
                 style="@style/Button"
@@ -90,23 +89,18 @@
                 android:id="@+id/nine_button"
                 style="@style/Button"
                 android:text="@string/nine" />
-
             <Button
                 android:id="@+id/multiply_button"
                 style="@style/Button"
                 android:text="@string/multiply"
                 android:textColor="@color/green" />
-
         </TableRow>
 
         <TableRow>
-
-
             <Button
                 android:id="@+id/four_button"
                 style="@style/Button"
                 android:text="@string/four" />
-
             <Button
                 android:id="@+id/five_button"
                 style="@style/Button"
@@ -125,7 +119,6 @@
         </TableRow>
 
         <TableRow>
-
             <Button
                 android:id="@+id/one_button"
                 style="@style/Button"
@@ -147,7 +140,6 @@
                 android:text="@string/plus"
                 android:textColor="@color/green" />
         </TableRow>
-
 
         <TableRow>
 

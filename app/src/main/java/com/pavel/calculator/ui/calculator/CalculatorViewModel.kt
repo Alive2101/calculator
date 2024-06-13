@@ -1,80 +1,112 @@
 package com.pavel.calculator.ui.calculator
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class CalculatorViewModel : ViewModel() {
 
-    private var newNumber: String = ""
-    var oldNumber: String = ""
-    var expression: String = ""
-    var result: Double? = null
+    private var secondOperand: String = ""
+    private var firstOperand: String = ""
+    private var expression: String = ""
+    private var isSecond: Boolean = false
+    private var result: Double? = null
+    private var operation: String = ""
 
-    fun write(number: String) {
-        if (number == ".") {
-            pointIsPresent(number)
-        } else expression += number
+    var expressionLiveData = MutableLiveData<String>()
+    var resultLiveData = MutableLiveData<Double?>()
+
+    fun inputSymbols(symbol: String) {
+        if ((result != null) && (operation == "")) {
+            clearValues()
+        }
+        if (symbol == ".") {
+            pointIsPresent(symbol)
+        } else {
+            expression += symbol
+        }
+        expressionLiveData.postValue(expression)
+        writeSecondOperand(symbol)
     }
 
-    fun writeNewNumber(number: String) {
-        if (number == ".") {
-            pointIsPresent(number)
-        } else newNumber += number
+    private fun writeSecondOperand(number: String) {
+        if (isSecond) {
+            if (number == ".") {
+                pointIsPresent(number)
+            } else {
+                secondOperand += number
+            }
+        }
     }
 
+    fun addOperation(sign: String) {
+        addNextOperation()
+        firstOperand = expression
+        expression += sign
+        expressionLiveData.postValue(expression)
+        operation = sign
+        isSecond = true
+    }
 
-    fun delete() {
+    fun clearValues() {
         expression = ""
-        oldNumber = ""
-        newNumber = ""
+        firstOperand = ""
+        secondOperand = ""
+        operation = ""
+        result = null
+        resultLiveData.postValue(null)
+        expressionLiveData.postValue(expression)
     }
 
-    fun sign() {
+    fun changeSign() {
         if (expression.contains('-')) {
             expression = expression.substring(1)
-            if (oldNumber.isNotEmpty()) {
-                oldNumber = oldNumber.substring(1)
+            if (firstOperand.isNotEmpty()) {
+                firstOperand = firstOperand.substring(1)
             }
         } else {
             expression = "-$expression"
-            if (oldNumber.isNotEmpty()) {
-                oldNumber = "-$oldNumber"
+            if (firstOperand.isNotEmpty()) {
+                firstOperand = "-$firstOperand"
             }
         }
+        expressionLiveData.postValue(expression)
     }
 
-    fun operation(sign: String) {
-        if ((expression.isNotEmpty()) && (newNumber.isNotEmpty()) && (oldNumber.isNotEmpty())) {
-            signIsPresent()
-            when (sign) {
-                "+" -> result = oldNumber.toDouble().plus(newNumber.toDouble())
-                "-" -> result = oldNumber.toDouble().minus(newNumber.toDouble())
-                "*" -> result = oldNumber.toDouble() * newNumber.toDouble()
-                "/" -> result = oldNumber.toDouble() / newNumber.toDouble()
-                "%" -> result = oldNumber.toDouble() % newNumber.toDouble()
+    fun solveOperation() {
+        if ((expression.isNotEmpty()) && (secondOperand.isNotEmpty()) && (firstOperand.isNotEmpty())) {
+            when (operation) {
+                "+" -> result = firstOperand.toDouble().plus(secondOperand.toDouble())
+                "-" -> result = firstOperand.toDouble().minus(secondOperand.toDouble())
+                "*" -> result = firstOperand.toDouble() * secondOperand.toDouble()
+                "/" -> result = firstOperand.toDouble() / secondOperand.toDouble()
+                "%" -> result = firstOperand.toDouble() % secondOperand.toDouble()
             }
             expression = result.toString()
-            oldNumber = result.toString()
-            newNumber = ""
-        } else
+            firstOperand = result.toString()
+            secondOperand = ""
+        } else {
             result = expression.toDouble()
-
-    }
-
-    private fun signIsPresent() {
-        if ((oldNumber.last() == '+') || (oldNumber.last() == '-')
-            || (oldNumber.last() == '*') || (oldNumber.last() == '/')
-        ) {
-            oldNumber = oldNumber.substring(0, oldNumber.length - 1)
         }
+        resultLiveData.postValue(result)
+        isSecond = false
+        operation = ""
     }
 
-    private fun pointIsPresent(number: String) {
+    private fun pointIsPresent(point: String) {
         if (!expression.contains('.')) {
-            expression += number
+            expression += point
         }
-        if ((newNumber.isNotEmpty()) && (!newNumber.contains('.'))) {
-            expression += number
-            newNumber += number
+        if ((secondOperand.isNotEmpty()) && (!secondOperand.contains('.'))) {
+            expression += point
+            secondOperand += point
+        }
+    }
+
+    private fun addNextOperation() {
+        if (isSecond) {
+            solveOperation()
+            resultLiveData.postValue(result)
+            isSecond = false
         }
     }
 }
